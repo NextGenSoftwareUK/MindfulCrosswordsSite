@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mindful Crosswords — Calm Your Mind, One Clue at a Time | OASIS Omniverse</title>
+<meta name="description" content="Mindful Crosswords — crossword puzzles themed around mindfulness, nature, spirituality and wellbeing. Earn karma for every puzzle you solve. Powered by NextGen Crosswords. Part of the OASIS Omniverse.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030b12;
+  --teal:#00c8a0;
+  --teal2:#00f0c0;
+  --violet:#7b4fe8;
+  --lavender:#a880f8;
+  --gold:#f0c060;
+  --sage:#7ec8a0;
+  --heading:#d0eed8;
+  --text:#a8bfd8;
+  --border:rgba(0,200,160,.18);
+  --card-bg:rgba(0,30,24,.9);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* grid background */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.025;
+  background-image:linear-gradient(rgba(0,200,160,1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,160,1) 1px,transparent 1px);
+  background-size:48px 48px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(3,11,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,200,160,.1)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:.1em;color:var(--teal);text-decoration:none;white-space:nowrap}
+.nav-logo span{color:var(--heading)}
+.nav-links{display:flex;align-items:center;gap:28px;margin-left:36px}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text);text-decoration:none;opacity:.7;transition:opacity .2s,color .2s}
+.nav-links a:hover{opacity:1;color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.nav-cta{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--bg);background:var(--teal);border:none;padding:9px 18px;border-radius:6px;cursor:pointer;text-decoration:none;white-space:nowrap;font-weight:700;transition:background .2s}
+.nav-cta:hover{background:var(--teal2)}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;overflow:hidden;z-index:1}
+.hero-bg-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 38%,rgba(0,200,160,.07),transparent 65%),radial-gradient(ellipse 35% 30% at 20% 70%,rgba(123,79,232,.05),transparent 60%);pointer-events:none}
+
+/* Hero crossword grid */
+.hero-grid-wrap{margin:0 auto 32px;position:relative}
+.hero-grid{display:grid;grid-template-columns:repeat(7,46px);grid-template-rows:repeat(3,46px);gap:3px}
+.hcell{width:46px;height:46px;background:rgba(0,200,160,.05);border:1px solid rgba(0,200,160,.18);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--teal);position:relative;transition:background .4s,border-color .4s}
+.hcell.black{background:rgba(0,200,160,.1);border-color:rgba(0,200,160,.22)}
+.hcell.lit{background:rgba(0,200,160,.14);border-color:rgba(0,200,160,.45)}
+.hcell-num{position:absolute;top:2px;left:3px;font-size:7px;font-family:'Share Tech Mono',monospace;color:rgba(0,200,160,.55);line-height:1}
+@keyframes cellPulse{0%,100%{background:rgba(0,200,160,.05)}50%{background:rgba(0,200,160,.16)}}
+
+.hero-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.28em;color:var(--teal);margin-bottom:18px;opacity:.9}
+.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(36px,6.5vw,76px);font-weight:900;letter-spacing:.04em;color:var(--heading);line-height:1.0;margin-bottom:12px;text-shadow:0 0 60px rgba(0,200,160,.2)}
+.hero-title em{color:var(--teal);font-style:normal}
+.hero-subtitle{font-family:'Orbitron',sans-serif;font-size:clamp(10px,1.6vw,13px);font-weight:600;letter-spacing:.22em;color:var(--teal);margin-bottom:24px;opacity:.8}
+.hero-desc{font-size:clamp(15px,2.2vw,18px);color:var(--text);max-width:620px;margin:0 auto 36px;line-height:1.8}
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
+.hero-badge{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.18em;padding:6px 14px;border-radius:20px;background:rgba(0,200,160,.07);border:1px solid rgba(0,200,160,.22);color:var(--teal)}
+.hero-badge.violet{background:rgba(123,79,232,.07);border-color:rgba(123,79,232,.22);color:var(--lavender)}
+.hero-badge.gold{background:rgba(240,192,96,.07);border-color:rgba(240,192,96,.22);color:var(--gold)}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-primary{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--bg);background:linear-gradient(135deg,var(--teal),#008c6e);border:none;padding:14px 28px;border-radius:8px;cursor:pointer;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,160,.3)}
+.btn-secondary{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--teal);background:transparent;border:1px solid rgba(0,200,160,.3);padding:14px 28px;border-radius:8px;cursor:pointer;text-decoration:none;transition:border-color .2s,background .2s}
+.btn-secondary:hover{border-color:var(--teal);background:rgba(0,200,160,.06)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* SECTIONS */
+.section{position:relative;z-index:1;padding:88px 24px}
+.section-kicker{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--teal);text-align:center;margin-bottom:14px}
+.section-kicker.violet{color:var(--lavender)}
+.section-kicker.gold{color:var(--gold)}
+.section-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,40px);font-weight:900;letter-spacing:.06em;color:var(--heading);text-align:center;margin-bottom:10px}
+.section-line{display:block;width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);margin:0 auto 32px}
+.section-line.violet{background:linear-gradient(90deg,transparent,var(--lavender),transparent)}
+.section-line.gold{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.section-sub{font-size:17px;color:var(--text);text-align:center;max-width:680px;margin:0 auto 52px;line-height:1.75}
+
+/* CARDS */
+.card{background:linear-gradient(135deg,var(--card-bg),rgba(0,10,8,.95));border:1px solid var(--border);border-radius:18px;padding:28px 26px}
+.card.violet{border-color:rgba(123,79,232,.2)}
+.card.gold{border-color:rgba(240,192,96,.2)}
+
+/* THEMES GRID */
+.themes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:18px;max-width:1080px;margin:0 auto}
+.theme-icon{font-size:32px;margin-bottom:12px}
+.theme-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:800;color:var(--heading);margin-bottom:8px;letter-spacing:.04em}
+.theme-desc{font-size:14px;color:var(--text);line-height:1.7}
+
+/* SAMPLE CLUE */
+.clue-band{background:linear-gradient(135deg,rgba(0,200,160,.04),rgba(123,79,232,.03));border-top:1px solid rgba(0,200,160,.1);border-bottom:1px solid rgba(0,200,160,.1);padding:72px 24px;position:relative;z-index:1;text-align:center}
+.clue-inner{max-width:760px;margin:0 auto}
+.clue-card{background:linear-gradient(135deg,var(--card-bg),rgba(0,10,8,.95));border:1px solid rgba(0,200,160,.2);border-radius:16px;padding:36px 40px;margin-bottom:32px;text-align:left}
+.clue-num{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--teal);margin-bottom:8px}
+.clue-text{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,22px);font-weight:700;color:var(--heading);line-height:1.4;margin-bottom:20px;font-style:italic}
+.clue-answer{font-family:'Share Tech Mono',monospace;font-size:18px;letter-spacing:.35em;color:var(--teal);margin-bottom:8px}
+.clue-note{font-size:14px;color:var(--text);line-height:1.6}
+
+/* KARMA BAND */
+.karma-band{background:linear-gradient(135deg,rgba(240,192,96,.04),rgba(123,79,232,.03));border-top:1px solid rgba(240,192,96,.1);border-bottom:1px solid rgba(240,192,96,.1);padding:72px 24px;position:relative;z-index:1}
+.karma-eg-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:36px}
+.karma-eg{background:rgba(240,192,96,.05);border:1px solid rgba(240,192,96,.12);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.karma-eg-icon{font-size:20px}
+.karma-eg-text{font-size:14px;color:var(--text)}
+.karma-eg-pts{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold);margin-left:auto;white-space:nowrap}
+
+/* DIFFICULTY */
+.diff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:14px;max-width:960px;margin:0 auto}
+.diff-card{background:linear-gradient(135deg,var(--card-bg),rgba(0,10,8,.95));border:1px solid var(--border);border-radius:14px;padding:20px 18px;text-align:center}
+.diff-icon{font-size:28px;margin-bottom:8px}
+.diff-name{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--heading);margin-bottom:4px;letter-spacing:.04em}
+.diff-karma{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px}
+.diff-desc{font-size:13px;color:var(--text);line-height:1.5}
+
+/* OASIS BAND */
+.oasis-band{background:linear-gradient(135deg,rgba(0,200,160,.04),rgba(123,79,232,.03));border-top:1px solid rgba(0,200,160,.1);border-bottom:1px solid rgba(0,200,160,.1);padding:72px 24px;position:relative;z-index:1}
+
+/* PILLS */
+.pill-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:32px}
+.pill{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.18em;padding:7px 16px;border-radius:20px;background:rgba(0,200,160,.05);border:1px solid rgba(0,200,160,.16);color:var(--teal)}
+.pill.violet{background:rgba(123,79,232,.05);border-color:rgba(123,79,232,.16);color:var(--lavender)}
+.pill.gold{background:rgba(240,192,96,.05);border-color:rgba(240,192,96,.16);color:var(--gold)}
+
+/* QUOTE */
+.quote-band{padding:64px 24px;position:relative;z-index:1;text-align:center}
+.quote-inner{max-width:780px;margin:0 auto}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:rgba(3,11,18,.95);border-top:1px solid rgba(0,200,160,.1);padding:48px 24px 36px}
+.footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start}
+.footer-brand{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--teal);letter-spacing:.1em;margin-bottom:10px}
+.footer-sub{font-size:14px;color:#a8bfd8;line-height:1.6;max-width:420px}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;justify-content:flex-end}
+.footer-links a{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:#a8bfd8;text-decoration:none;opacity:.7;transition:opacity .2s,color .2s}
+.footer-links a:hover{opacity:1;color:var(--teal)}
+.footer-copy{text-align:center;font-size:12px;color:#a8bfd8;opacity:.4;margin-top:32px;border-top:1px solid rgba(0,200,160,.07);padding-top:24px}
+
+@media(max-width:700px){
+  .nav-links{display:none}
+  .footer-inner{grid-template-columns:1fr}
+  .footer-links{justify-content:flex-start}
+  .hero-grid{grid-template-columns:repeat(7,38px);grid-template-rows:repeat(3,38px)}
+  .hcell{width:38px;height:38px;font-size:14px}
+}
+@media(max-width:520px){
+  .section{padding:64px .75rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://oasisomniverse.one">MINDFUL <span>CROSSWORDS</span></a>
+    <div class="nav-links">
+      <a href="#themes">THEMES</a>
+      <a href="#clues">SAMPLE</a>
+      <a href="#difficulty">DIFFICULTY</a>
+      <a href="#karma">KARMA</a>
+      <a href="#oasis">OASIS</a>
+    </div>
+    <div class="nav-right" id="nav-right">
+      <a class="nav-cta" href="https://oasisomniverse.one">OASIS OMNIVERSE</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-glow"></div>
+
+  <!-- Animated crossword grid -->
+  <div class="hero-grid-wrap">
+    <div class="hero-grid" id="hero-grid">
+      <!-- Row 1 -->
+      <div class="hcell black"></div>
+      <div class="hcell"><span class="hcell-num">1</span>M</div>
+      <div class="hcell">I</div>
+      <div class="hcell">N</div>
+      <div class="hcell">D</div>
+      <div class="hcell">F</div>
+      <div class="hcell black"></div>
+      <!-- Row 2 -->
+      <div class="hcell"><span class="hcell-num">2</span>B</div>
+      <div class="hcell black"></div>
+      <div class="hcell"><span class="hcell-num">3</span>N</div>
+      <div class="hcell black"></div>
+      <div class="hcell">L</div>
+      <div class="hcell black"></div>
+      <div class="hcell">U</div>
+      <!-- Row 3 -->
+      <div class="hcell">R</div>
+      <div class="hcell black"></div>
+      <div class="hcell">O</div>
+      <div class="hcell black"></div>
+      <div class="hcell">O</div>
+      <div class="hcell black"></div>
+      <div class="hcell">L</div>
+    </div>
+  </div>
+
+  <div class="hero-eyebrow">DAILY PUZZLE · OASIS OMNIVERSE</div>
+  <h1 class="hero-title">MINDFUL<br><em>CROSSWORDS</em></h1>
+  <div class="hero-subtitle">CALM YOUR MIND · ONE CLUE AT A TIME</div>
+  <p class="hero-desc">Crossword puzzles themed entirely around mindfulness, nature, spirituality and wellbeing — powered by the NextGen Crosswords engine. Solve daily puzzles. Earn karma with every completed grid. Carry your progress across the entire OASIS Omniverse.</p>
+
+  <div class="hero-badges">
+    <span class="hero-badge">DAILY PUZZLES</span>
+    <span class="hero-badge">MINDFULNESS THEMES</span>
+    <span class="hero-badge violet">NATURE & SPIRIT</span>
+    <span class="hero-badge violet">CHAKRAS & HEALING</span>
+    <span class="hero-badge gold">EARN KARMA</span>
+    <span class="hero-badge gold">OASIS INTEGRATED</span>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#themes" class="btn-primary">START SOLVING</a>
+    <a href="https://oasisomniverse.one" target="_blank" class="btn-secondary">OASIS OMNIVERSE</a>
+  </div>
+</section>
+
+<!-- THE IDEA -->
+<section class="section" id="about" style="background:rgba(255,255,255,.003)">
+  <div class="section-kicker">THE CONCEPT</div>
+  <h2 class="section-title">CROSSWORDS AS A MINDFULNESS PRACTICE</h2>
+  <span class="section-line"></span>
+  <p class="section-sub">Mindful Crosswords takes the proven mental health benefits of crossword puzzles — focus, presence, vocabulary, calm — and wraps them entirely in the language of mindfulness, healing and wellbeing. Every clue is a gentle invitation to think about something that matters.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:20px;max-width:960px;margin:0 auto">
+    <div class="card reveal">
+      <div style="font-size:28px;margin-bottom:12px">🧠</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--heading);margin-bottom:10px">THE FOCUS STATE</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.7">Solving a crossword requires exactly the same kind of focused, present awareness as meditation — one thing at a time, no distractions, just the clue in front of you. Mindful Crosswords makes that connection explicit: every puzzle is a practice session as much as a game.</p>
+    </div>
+    <div class="card reveal violet">
+      <div style="font-size:28px;margin-bottom:12px">🌿</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--heading);margin-bottom:10px">LANGUAGE THAT UPLIFTS</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.7">Every answer, every clue, every theme is drawn from the vocabulary of wellbeing: breath, chakra, lotus, solstice, equinox, mycelium, forest, silence, stillness, compassion. Language shapes thought — filling your mind with these words as you solve has a real effect.</p>
+    </div>
+    <div class="card reveal gold">
+      <div style="font-size:28px;margin-bottom:12px">⚡</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--heading);margin-bottom:10px">KARMA FOR SOLVING</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.7">Complete a puzzle and earn karma — the same karma score that powers your avatar across Our World, One World, ODOOM and OQUAKE. Daily streak bonuses multiply your earning rate. The calmer and more consistent your solving, the stronger your presence in the OASIS.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PUZZLE THEMES -->
+<section class="section" id="themes">
+  <div class="section-kicker">THE THEMES</div>
+  <h2 class="section-title">EVERY PUZZLE HAS A WORLD</h2>
+  <span class="section-line"></span>
+  <p class="section-sub">Mindful Crosswords puzzles are grouped into themed collections — each one a different lens on the world of wellbeing and consciousness.</p>
+
+  <div class="themes-grid">
+    <div class="card reveal">
+      <div class="theme-icon">🧘</div>
+      <div class="theme-title">MEDITATION & STILLNESS</div>
+      <div class="theme-desc">Breath, mantra, dharma, zazen, vipassana, samadhi, drishti, mudra, metta. Puzzles built from the language of sitting practice across every tradition.</div>
+    </div>
+    <div class="card reveal violet">
+      <div class="theme-icon">🌿</div>
+      <div class="theme-title">NATURE & THE ELEMENTS</div>
+      <div class="theme-desc">Forest, mycelium, solstice, equinox, lichen, watershed, deciduous, circadian. Clues drawn from the living world — each answer a small reminder of what we're part of.</div>
+    </div>
+    <div class="card reveal gold">
+      <div class="theme-icon">🔮</div>
+      <div class="theme-title">CHAKRAS & ENERGY</div>
+      <div class="theme-desc">Aura, prana, kundalini, meridian, nadi, chakra, anahata, sahasrara, orgone. For those who sense the invisible architecture behind the visible world.</div>
+    </div>
+    <div class="card reveal">
+      <div class="theme-icon">🌙</div>
+      <div class="theme-title">SLEEP & DREAMS</div>
+      <div class="theme-desc">Melatonin, hypnagogic, lucid, circadian, delta, somnolent, reverie, threshold. The vocabulary of the in-between — the border country between waking and sleep.</div>
+    </div>
+    <div class="card reveal violet">
+      <div class="theme-icon">🌺</div>
+      <div class="theme-title">HEALING & HERBALISM</div>
+      <div class="theme-desc">Ashwagandha, adaptogens, valerian, echinacea, elderberry, reishi, lion's mane. Plant wisdom that humanity has carried for thousands of years — one letter at a time.</div>
+    </div>
+    <div class="card reveal gold">
+      <div class="theme-icon">✨</div>
+      <div class="theme-title">SACRED GEOMETRY</div>
+      <div class="theme-desc">Fibonacci, dodecahedron, mandala, vesica, torus, phi, icosahedron, fractal, tessellate. The patterns that appear everywhere — from shells to galaxies to the grid of a crossword itself.</div>
+    </div>
+    <div class="card reveal">
+      <div class="theme-icon">🌊</div>
+      <div class="theme-title">FLOW STATES</div>
+      <div class="theme-desc">Immersed, absorbed, effortless, coherent, synchrony, cadence, resonance, peak. The language of being fully alive in a single moment — which is also what a good crossword feels like.</div>
+    </div>
+    <div class="card reveal violet">
+      <div class="theme-icon">🏛️</div>
+      <div class="theme-title">ANCIENT WISDOM</div>
+      <div class="theme-desc">Stoicism, Taoism, Vedanta, Sufism, Kabbalah, alchemy, hermeticism, Pythagorean. The great wellsprings of human understanding — condensed to answers of 4 to 12 letters.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SAMPLE CLUES -->
+<div class="clue-band" id="clues">
+  <div class="clue-inner">
+    <div class="section-kicker" style="text-align:center;margin-bottom:14px">A TASTE</div>
+    <h2 class="section-title">SAMPLE CLUES</h2>
+    <span class="section-line" style="display:block;width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);margin:0 auto 36px"></span>
+    <p style="font-size:16px;color:var(--text);max-width:560px;margin:0 auto 40px;line-height:1.75">The kinds of clue you'll find in Mindful Crosswords — cryptic, gentle and always grounded in the world of wellbeing.</p>
+
+    <div class="clue-card reveal">
+      <div class="clue-num">7 ACROSS · NATURE & ELEMENTS · 10 LETTERS</div>
+      <div class="clue-text">"Underground network connecting trees — nature's original internet, and the most generous sharing economy on Earth (10)"</div>
+      <div class="clue-answer">M Y C E L I U M</div>
+      <div class="clue-note">The fungal web beneath forests through which trees share nutrients, water and chemical signals. First described in Our World's Deep Mechanics as the tree network that grows stronger with every living connection.</div>
+    </div>
+
+    <div class="clue-card reveal" style="border-color:rgba(123,79,232,.25)">
+      <div class="clue-num">3 DOWN · CHAKRAS & ENERGY · 7 LETTERS</div>
+      <div class="clue-text">"Heart chakra — Sanskrit name for the fourth energy centre, seat of love, compassion and connection (7)"</div>
+      <div class="clue-answer">A N A H A T A</div>
+      <div class="clue-note">In yogic tradition, anahata governs love, empathy and forgiveness. In Our World, activating the heart chakra tech tree node opens the ability to sense the emotional state of nearby players.</div>
+    </div>
+
+    <div class="clue-card reveal" style="border-color:rgba(240,192,96,.2)">
+      <div class="clue-num">12 ACROSS · SACRED GEOMETRY · 3 LETTERS</div>
+      <div class="clue-text">"Golden ratio — the number approximately 1.618, nature's favourite proportion, found in shells, galaxies and the spacing of this very clue (3)"</div>
+      <div class="clue-answer">P H I</div>
+      <div class="clue-note">φ (phi) appears in the spiral of a nautilus shell, the branching of trees, the arrangement of seeds in a sunflower and the proportions of the human body. Sacred geometry, hiding in plain sight everywhere.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DIFFICULTY -->
+<section class="section" id="difficulty">
+  <div class="section-kicker violet">THE LEVELS</div>
+  <h2 class="section-title">CHOOSE YOUR DEPTH</h2>
+  <span class="section-line violet"></span>
+  <p class="section-sub">Mindful Crosswords adapts to where you are in your day — and your practice. From a gentle morning warm-up to a deep evening session that genuinely stretches you.</p>
+
+  <div class="diff-grid">
+    <div class="diff-card reveal">
+      <div class="diff-icon">🌱</div>
+      <div class="diff-name">SEEDLING</div>
+      <div class="diff-karma">+15 karma</div>
+      <div class="diff-desc">Short grids. Common words. Gentle definitions. Perfect for your first cup of tea and five minutes of quiet.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(0,200,160,.28)">
+      <div class="diff-icon">🌿</div>
+      <div class="diff-name">GROWING</div>
+      <div class="diff-karma">+30 karma</div>
+      <div class="diff-desc">Standard grids. A mix of easy and medium clues. Some wordplay. The daily sweet spot for most solvers.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(123,79,232,.25)">
+      <div class="diff-icon">🌳</div>
+      <div class="diff-name">ROOTED</div>
+      <div class="diff-karma">+55 karma</div>
+      <div class="diff-desc">Larger grids. More cryptic clues. Specialist vocabulary from deeper traditions. Requires genuine stillness and patience to solve.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(240,192,96,.25)">
+      <div class="diff-icon">🌲</div>
+      <div class="diff-name">ANCIENT</div>
+      <div class="diff-karma">+90 karma</div>
+      <div class="diff-desc">Complex cryptic grids. Obscure sacred traditions. Multi-language clues from Sanskrit, Hebrew, Latin. Not for the faint of heart.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(0,200,160,.4)">
+      <div class="diff-icon">✨</div>
+      <div class="diff-name">TRANSCENDENT</div>
+      <div class="diff-karma">+200 karma</div>
+      <div class="diff-desc">Weekly grand puzzles. No hints. No letter reveals. Pure focus, pure presence. Complete one and your avatar glows for 24 hours across the OASIS.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(123,79,232,.3)">
+      <div class="diff-icon">🌬️</div>
+      <div class="diff-name">BREATHWORK</div>
+      <div class="diff-karma">+20 karma</div>
+      <div class="diff-desc">Timed puzzles designed to match a breathing rhythm — solve one clue per exhale, pause per inhale. Pairs with Be Mindful for a double karma bonus.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(0,200,160,.2)">
+      <div class="diff-icon">🌙</div>
+      <div class="diff-name">EVENING WIND-DOWN</div>
+      <div class="diff-karma">+25 karma</div>
+      <div class="diff-desc">Shorter, gentler puzzles designed for the hour before bed. Calming themes only — sleep, dreams, moonlight, stillness. Counts toward your Be Mindful sleep score.</div>
+    </div>
+    <div class="diff-card reveal" style="border-color:rgba(240,192,96,.2)">
+      <div class="diff-icon">👥</div>
+      <div class="diff-name">COLLECTIVE</div>
+      <div class="diff-karma">+40 karma + group bonus</div>
+      <div class="diff-desc">Solve with others in real time — each player takes clues in turn. A shared grid, a shared focus. Everyone in the group earns karma when the puzzle is completed together.</div>
+    </div>
+  </div>
+</section>
+
+<!-- KARMA BAND -->
+<div class="karma-band" id="karma">
+  <div style="max-width:960px;margin:0 auto;text-align:center">
+    <div class="section-kicker gold" style="text-align:center;margin-bottom:14px">THE REWARD</div>
+    <h2 class="section-title">SOLVING EARNS KARMA</h2>
+    <span class="section-line gold" style="display:block;width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 20px"></span>
+    <p style="font-size:16px;color:var(--text);max-width:680px;margin:0 auto 8px;line-height:1.75">Every completed puzzle earns karma — carried directly into your OASIS avatar. Streaks multiply. Transcendent completions glow. And if you solve your daily puzzle after a Be Mindful session, you earn a calm-state bonus on top.</p>
+
+    <div class="karma-eg-row reveal">
+      <div class="karma-eg"><div class="karma-eg-icon">🌱</div><div class="karma-eg-text">Seedling puzzle completed</div><div class="karma-eg-pts">+15 karma</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">🌿</div><div class="karma-eg-text">Growing puzzle completed</div><div class="karma-eg-pts">+30 karma</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">🌳</div><div class="karma-eg-text">Rooted puzzle completed</div><div class="karma-eg-pts">+55 karma</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">✨</div><div class="karma-eg-text">Transcendent completed</div><div class="karma-eg-pts">+200 karma</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">🔥</div><div class="karma-eg-text">7-day solving streak</div><div class="karma-eg-pts">+100 karma</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">🧘</div><div class="karma-eg-text">Post-meditation bonus</div><div class="karma-eg-pts">1.5× multiplier</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">⚡</div><div class="karma-eg-text">No hints used</div><div class="karma-eg-pts">+25 bonus</div></div>
+      <div class="karma-eg"><div class="karma-eg-icon">🌍</div><div class="karma-eg-text">Solved outdoors</div><div class="karma-eg-pts">+10 bonus</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-band">
+  <div class="quote-inner reveal">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.22em;color:var(--teal);margin-bottom:20px">DAVID ELLAMS — CREATOR</div>
+    <p style="font-size:19px;color:#c8e8d8;line-height:1.85;font-style:italic;margin-bottom:20px">"I built the NextGen Crosswords engine for David Akenhead and the Times. Mindful Crosswords is what I always wanted to do with it — puzzles that don't just fill time but actually fill your mind with something worth thinking about. Every answer is a small meditation. Every completed grid is a reason to sit still for ten minutes and feel good about it."</p>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--text);opacity:.5">PART OF THE OASIS OMNIVERSE · POWERED BY NEXTGEN CROSSWORDS</div>
+  </div>
+</div>
+
+<!-- OASIS INTEGRATION -->
+<div class="oasis-band" id="oasis">
+  <div style="max-width:960px;margin:0 auto;text-align:center">
+    <div class="section-kicker" style="text-align:center">OASIS OMNIVERSE</div>
+    <h2 class="section-title">YOUR FOCUS POWERS YOUR WORLD</h2>
+    <span class="section-line" style="display:block;width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);margin:0 auto 32px"></span>
+    <p style="font-size:16px;color:var(--text);max-width:680px;margin:0 auto 44px;line-height:1.75">Mindful Crosswords plugs directly into the OASIS karma engine — so the ten minutes you spend quietly solving a puzzle contributes to your avatar, your aura and your power across the entire OASIS Omniverse.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(210px,100%),1fr));gap:16px;max-width:900px;margin:0 auto 40px">
+      <div class="reveal" style="background:rgba(0,200,160,.04);border:1px solid rgba(0,200,160,.14);border-radius:12px;padding:20px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--heading);margin-bottom:6px">BE MINDFUL</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.5">Complete a Be Mindful breathing or meditation session before solving and earn a 1.5× karma multiplier on your puzzle. Calm mind, sharper solver.</div>
+      </div>
+      <div class="reveal" style="background:rgba(123,79,232,.04);border:1px solid rgba(123,79,232,.14);border-radius:12px;padding:20px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--heading);margin-bottom:6px">OUR WORLD</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.5">Completed puzzles appear as glowing nodes on the Our World map. Solve in a park for a location bonus — crosswords in sacred spaces earn extra.</div>
+      </div>
+      <div class="reveal" style="background:rgba(0,200,160,.04);border:1px solid rgba(0,200,160,.14);border-radius:12px;padding:20px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--heading);margin-bottom:6px">NEXTGEN CROSSWORDS</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.5">Powered by the same engine as NextGen Crosswords — David Akenhead's Times archive. The technology that helped millions of crossword fans now serving the wellness community.</div>
+      </div>
+      <div class="reveal" style="background:rgba(240,192,96,.04);border:1px solid rgba(240,192,96,.14);border-radius:12px;padding:20px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--heading);margin-bottom:6px">OPORTAL</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.5">Your full puzzle history, solving stats, streaks, karma earned and theme completions all live in your OPORTAL dashboard alongside your other OASIS data.</div>
+      </div>
+    </div>
+
+    <a href="https://oasisomniverse.one" target="_blank" class="btn-primary" style="display:inline-block">EXPLORE THE OASIS OMNIVERSE</a>
+
+    <div class="pill-row">
+      <span class="pill">Web4 Avatar SSO</span>
+      <span class="pill violet">OASIS Karma Engine</span>
+      <span class="pill gold">Be Mindful Integration</span>
+      <span class="pill">Our World Map Nodes</span>
+      <span class="pill violet">NextGen Engine</span>
+      <span class="pill gold">Daily Streaks</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">MINDFUL CROSSWORDS</div>
+      <p class="footer-sub">Crossword puzzles themed around mindfulness, nature, spirituality and wellbeing. Earn karma for every puzzle you complete. Powered by the NextGen Crosswords engine. Part of the OASIS Omniverse.</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://oasisomniverse.one" target="_blank">OASIS OMNIVERSE</a>
+      <a href="https://bemindful.oasisomniverse.one" target="_blank">BE MINDFUL</a>
+      <a href="https://ourworldthegame.com" target="_blank">OUR WORLD</a>
+      <a href="https://oportal.oasisomniverse.one" target="_blank">OPORTAL</a>
+    </div>
+  </div>
+  <div class="footer-copy">© 2026 NextGen Software / David Ellams · Mindful Crosswords · Powered by NextGen Crosswords · Part of the OASIS Omniverse · All rights reserved</div>
+</footer>
+
+<script type="module">
+try{
+  const{OASISClient}=await import('https://esm.sh/@oasisomniverse/web4-api@2.0.2');
+  const oasis=new OASISClient({baseUrl:'https://api.web4.oasisomniverse.one',persistSession:true});
+  const nr=document.getElementById('nav-right');
+  const btn=document.createElement('button');
+  btn.style.cssText='font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.14em;padding:9px 18px;border-radius:6px;border:1px solid rgba(0,200,160,.4);background:transparent;color:#00c8a0;cursor:pointer;transition:background .2s';
+  const sess=oasis.getSession();
+  const setLabel=s=>{btn.textContent=s?`⬡ ${s.username||'AVATAR'}`:'⬡ CONNECT AVATAR'};
+  setLabel(sess);
+  btn.addEventListener('click',async()=>{
+    if(oasis.getSession()){oasis.logout();setLabel(null);return;}
+    try{const s=await oasis.loginWithSelector();setLabel(s);}catch{}
+  });
+  nr.insertBefore(btn,nr.firstChild);
+}catch{}
+</script>
+
+<script>
+/* STARFIELD */
+(function(){
+  const c=document.getElementById('starfield');
+  const ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;stars=Array.from({length:150},()=>({
+    x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*1.3+.3,
+    o:Math.random()*.6+.1,
+    s:Math.random()*.01+.003,
+    teal:Math.random()<.18
+  }))}
+  window.addEventListener('resize',resize);resize();
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(s.d=s.d||1);
+      if(s.o>.85||s.o<.08)s.d*=-1;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.teal?`rgba(0,200,160,${s.o})`:`rgba(180,220,255,${s.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* CROSSWORD CELL ANIMATION */
+(function(){
+  const cells=document.querySelectorAll('.hcell:not(.black)');
+  let i=0;
+  function pulse(){
+    cells.forEach(c=>c.classList.remove('lit'));
+    if(cells[i]){cells[i].classList.add('lit');}
+    i=(i+1)%cells.length;
+    setTimeout(pulse,520);
+  }
+  pulse();
+})();
+
+/* SCROLL REVEAL */
+(function(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>
