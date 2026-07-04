@@ -158,6 +158,8 @@ footer{position:relative;z-index:1;background:rgba(3,11,18,.95);border-top:1px s
 @media(max-width:520px){
   .section{padding:64px .75rem}.section-inner{padding:0 .75rem}
 }
+.three-card-grid{display:grid;gap:20px;max-width:960px;margin:0 auto;grid-template-columns:repeat(3,1fr)}
+@media(max-width:640px){.three-card-grid{grid-template-columns:1fr}}
 .nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;background:none;border:none;cursor:pointer;z-index:101;flex-shrink:0;margin-left:auto}
 .nav-toggle span{display:block;width:100%;height:2px;background:#a8bfd8;transition:transform .25s,opacity .25s}
 .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -167,7 +169,7 @@ footer{position:relative;z-index:1;background:rgba(3,11,18,.95);border-top:1px s
 @media(max-width:860px){
   .nav-toggle{display:flex}
   .nav-right{display:none}
-  .nav-links{position:fixed;top:0;right:0;height:100vh;width:min(78vw,320px);flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:20px;padding:80px 32px 24px;overflow-y:auto;background:rgba(3,7,20,.97);backdrop-filter:blur(12px);border-left:1px solid rgba(255,255,255,.08);transform:translateX(100%);transition:transform .3s ease;z-index:99;margin-left:0}
+  .nav-links{display:flex;position:fixed;top:0;right:0;height:100vh;width:min(78vw,320px);flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:20px;padding:80px 32px 24px;overflow-y:auto;background:rgba(3,7,20,.97);backdrop-filter:blur(12px);border-left:1px solid rgba(255,255,255,.08);transform:translateX(100%);transition:transform .3s ease;z-index:99;margin-left:0}
   .nav-links.open{transform:translateX(0)}
   .nav-mobile-cta{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.12em;border-radius:999px;padding:10px 20px;text-decoration:none;margin-top:8px;border:1px solid rgba(255,255,255,.25);color:#a8bfd8}
 }</style>
@@ -255,7 +257,7 @@ footer{position:relative;z-index:1;background:rgba(3,11,18,.95);border-top:1px s
   <span class="section-line"></span>
   <p class="section-sub">Mindful Crosswords takes the proven mental health benefits of crossword puzzles — focus, presence, vocabulary, calm — and wraps them entirely in the language of mindfulness, healing and wellbeing. Every clue is a gentle invitation to think about something that matters.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:20px;max-width:960px;margin:0 auto">
+  <div class="three-card-grid">
     <div class="card reveal">
       <div style="font-size:28px;margin-bottom:12px">🧠</div>
       <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--heading);margin-bottom:10px">THE FOCUS STATE</div>
